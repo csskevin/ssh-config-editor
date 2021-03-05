@@ -5,28 +5,42 @@ const _ = require('lodash');
  */
 class Parser {
   static getSections(configContent) {
-    // Each section is seperated by Host
     const sections = [];
     const lines = configContent.split('\n');
     let currentIndex = false;
-    lines.forEach((line) => {
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+      const line = lines[lineIndex];
       const trimmedLine = line.trim();
-      const parsedLine = this.parseLine(trimmedLine);
-      if (parsedLine.keyword === 'host') {
-        currentIndex = currentIndex === false ? 0 : currentIndex + 1;
-        sections[currentIndex] = [];
-        sections[currentIndex].push(parsedLine);
-      } else if (trimmedLine.startsWith('#') || trimmedLine.length === 0) {
-        // Lines starting with # and empty lines are ignored
-      } else {
-        sections[currentIndex].push(parsedLine);
+      if (trimmedLine.startsWith('#')) {
+        if (currentIndex === false) {
+          currentIndex = 0;
+          sections[currentIndex] = [];
+        }
+        sections[currentIndex].push({
+          type: 'comment',
+          value: trimmedLine,
+        });
       }
-    });
+      const parsedLine = this.parseLine(trimmedLine);
+      if (parsedLine) {
+        parsedLine.type = 'keyword';
+        if (parsedLine.keyword === 'host') {
+          currentIndex = currentIndex === false ? 0 : currentIndex + 1;
+          sections[currentIndex] = [];
+          sections[currentIndex].push(parsedLine);
+        } else {
+          sections[currentIndex].push(parsedLine);
+        }
+      }
+    }
     return sections;
   }
 
   static parseLine(keywordArgument) {
-    const matchedElements = keywordArgument.match(/(.*?) *[=| ] *(.*?)$/);
+    /**
+     * TODO: Prevent that element ends with =
+     */
+    const matchedElements = keywordArgument.trim().match(/(.*?) *[=| ] *(.*?)$/);
     if (matchedElements && matchedElements.length >= 3) {
       const key = matchedElements[1].toLowerCase().trim();
       const value = matchedElements[2].trim();

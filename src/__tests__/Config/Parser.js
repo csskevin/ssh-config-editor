@@ -11,32 +11,49 @@ test('ConfigParser - getting Config Sectors', () => {
   expect(ConfigParser.getSections(editor.getConfigContent())).toEqual([
     [
       {
+        type: 'comment',
+        value: '# SSH Config',
+      },
+    ],
+    [
+      {
+        type: 'keyword',
         keyword: 'host',
         value: 'github.com',
       },
       {
+        type: 'keyword',
         keyword: 'user',
         value: 'git',
       },
       {
+        type: 'keyword',
         keyword: 'port',
         value: '22',
       },
     ],
     [
       {
+        type: 'keyword',
         keyword: 'host',
         value: 'example.com',
       },
       {
+        type: 'keyword',
         keyword: 'hostname',
         value: 'example.com',
       },
       {
+        type: 'comment',
+        value: '# Example Comment',
+      },
+      {
+        type: 'keyword',
         keyword: 'user',
         value: 'root',
       },
       {
+        type: 'keyword',
         keyword: 'port',
         value: '22100',
       },
